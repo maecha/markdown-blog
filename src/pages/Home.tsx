@@ -1,13 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { Link } from "react-router-dom";
-
-type Post = {
-  id: number;
-  title: string;
-  content: string;
-  created_at: Date;
-};
+import { type Post } from "@/schemas/postSchema";
 
 export default function Home() {
   const [posts, setPosts] = useState<Post[]>([]);

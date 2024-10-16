@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabaseClient";
 import Modal from "@/components/Modal";
-
 import { type Post } from "@/schemas/postSchema";
 
 export default function PostDetail() {
