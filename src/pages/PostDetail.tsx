@@ -57,28 +57,23 @@ export default function PostDetail() {
   };
 
   return (
-    <div className="container mx-auto p-4">
+    <div>
       {post ? (
-        <div className="bg-white shadow-md rounded-lg p-6">
-          {/* タイトル部分 */}
-          <h1 className="text-4xl font-bold mb-4 text-center">{post.title}</h1>
+        <div className="break-words">
+          <h1 className="text-3xl font-bold mt-2 mb-8">{post.title}</h1>
 
-          {/* ユーザー名と投稿日、Popoverボタンを横並びに配置 */}
-          <div className="flex justify-between items-center mb-6">
-            {/* 左側: ユーザー名と投稿日 */}
+          <div className="flex justify-between items-center mb-8">
             <div className="text-gray-500 text-sm">
               <span className="font-medium">{"user_name"}</span>
               {" ・ "}
               <span>{new Date(post.created_at).toLocaleDateString()}</span>
             </div>
 
-            {/* 右側: Popoverボタン */}
             <div className="relative" ref={popoverRef}>
               <button
                 onClick={() => setIsPopoverOpen(!isPopoverOpen)}
-                className="px-4 py-2 text-black rounded flex items-center space-x-1"
+                className="py-2 text-black rounded flex items-center space-x-1"
               >
-                {/* アクションボタンとして横並びの大きな点を使用 */}
                 <span className="block w-1.5 h-1.5 bg-gray-500 rounded-full"></span>
                 <span className="block w-1.5 h-1.5 bg-gray-500 rounded-full"></span>
                 <span className="block w-1.5 h-1.5 bg-gray-500 rounded-full"></span>
@@ -112,13 +107,11 @@ export default function PostDetail() {
             </div>
           </div>
 
-          {/* コンテンツ部分（HTMLをレンダリング） */}
           <div
-            className="prose max-w-none mb-6"
+            className="prose max-w-none mb-8"
             dangerouslySetInnerHTML={{ __html: post.content }}
           />
 
-          {/* 削除確認モーダル */}
           <Modal
             isOpen={isModalOpen}
             onClose={() => setIsModalOpen(false)}
