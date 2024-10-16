@@ -26,22 +26,32 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="container mx-auto p-4">
-      {/* <h1 className="text-3xl font-bold mb-4">Home</h1> */}
+    <div className="container mx-auto">
       {isLoggedIn ? (
-        <div>
-          <ul>
-            {posts.map((post) => (
-              <li key={post.id} className="mb-2">
-                <Link to={`/post/${post.id}`} className="text-sky-600">
+        <div className="grid gap-6">
+          {posts.length > 0 ? (
+            posts.map((post) => (
+              <div key={post.id} className="bg-white rounded p-6">
+                <Link
+                  to={`/post/${post.id}`}
+                  className="text-xl font-bold text-sky-600 hover:underline"
+                >
                   {post.title}
                 </Link>
-              </li>
-            ))}
-          </ul>
+                <p className="text-gray-500 text-sm mt-2">
+                  {new Date(post.created_at).toLocaleDateString()}
+                </p>
+                <p className="mt-4 text-gray-700 line-clamp-2">
+                  {post.content}
+                </p>
+              </div>
+            ))
+          ) : (
+            <p className="text-gray-500">投稿がありません。</p>
+          )}
         </div>
       ) : (
-        <p>ログインしてください。</p>
+        <p className="text-center text-red-500">ログインしてください。</p>
       )}
     </div>
   );
