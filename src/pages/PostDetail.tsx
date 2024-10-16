@@ -3,12 +3,7 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabaseClient";
 import Modal from "@/components/Modal";
 
-type Post = {
-  id: number;
-  title: string;
-  content: string;
-  created_at: Date;
-};
+import { type Post } from "@/schemas/postSchema";
 
 export default function PostDetail() {
   const { id } = useParams();
@@ -24,7 +19,7 @@ export default function PostDetail() {
         popoverRef.current &&
         !popoverRef.current.contains(event.target as Node)
       ) {
-        setIsPopoverOpen(false); // 外側をクリックするとPopoverを閉じる
+        setIsPopoverOpen(false);
       }
     };
 

@@ -41,9 +41,10 @@ export default function Home() {
                 <p className="text-gray-500 text-sm mt-2">
                   {new Date(post.created_at).toLocaleDateString()}
                 </p>
-                <p className="mt-4 text-gray-700 line-clamp-2">
-                  {post.content}
-                </p>
+                <p
+                  className="mt-4 text-gray-700 line-clamp-2"
+                  dangerouslySetInnerHTML={{ __html: post.content }}
+                ></p>
               </div>
             ))
           ) : (
@@ -51,7 +52,7 @@ export default function Home() {
           )}
         </div>
       ) : (
-        <p className="text-center text-red-500">ログインしてください。</p>
+        <p className="text-center text-red-400">ログインしてください。</p>
       )}
     </div>
   );

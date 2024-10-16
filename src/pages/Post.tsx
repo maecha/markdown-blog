@@ -2,10 +2,11 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "@/lib/supabaseClient";
 import { Editor } from "@/components/Editor";
+import { PostFormSchema, type Post } from "@/schemas/postSchema";
 
 export default function Post() {
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
+  const [title, setTitle] = useState<string>("");
+  const [content, setContent] = useState<string>("");
   const navigation = useNavigate();
   const { id } = useParams();
 
@@ -28,12 +29,38 @@ export default function Post() {
   }, [id]);
 
   const handleSubmit = async () => {
-    if (id) {
-      await supabase.from("posts").update({ title, content }).eq("id", id);
-    } else {
-      await supabase.from("posts").insert([{ title, content }]);
+    const validationResult = PostFormSchema.safeParse({ title, content });
+    if (!validationResult.success) {
+      console.error("バリデーションエラー:", validationResult.error.errors);
+      return;
     }
-    navigation("/");
+
+    if (id) {
+      const { error } = await supabase
+        .from("posts")
+        .update({ title, content })
+        .eq("id", id);
+
+      if (error) {
+        throw error;
+      }
+
+      navigation(`/post/${id}`);
+    } else {
+      const { data, error } = await supabase
+        .from("posts")
+        .insert([{ title, content }])
+        .select();
+
+      if (error) {
+        throw error;
+      }
+
+      if (data && (data as Post[]).length > 0) {
+        const createdPost = (data as Post[])[0];
+        navigation(`/post/${createdPost.id}`);
+      }
+    }
   };
 
   return (
