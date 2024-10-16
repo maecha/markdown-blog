@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
@@ -5,9 +6,12 @@ import Placeholder from "@tiptap/extension-placeholder";
 interface EditorProps {
   setContent: (content: string) => void;
   editorId: string;
+  content?: string;
 }
 
-export function Editor({ setContent, editorId }: EditorProps) {
+export function Editor({ setContent, editorId, content = "" }: EditorProps) {
+  const [isContentSet, setIsContentSet] = useState(false);
+
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -27,6 +31,13 @@ export function Editor({ setContent, editorId }: EditorProps) {
       setContent(editor.getHTML());
     },
   });
+
+  useEffect(() => {
+    if (editor && content && !isContentSet) {
+      editor.commands.setContent(content);
+      setIsContentSet(true);
+    }
+  }, [editor, content, isContentSet]);
 
   const handleLabelClick = () => {
     if (editor) {

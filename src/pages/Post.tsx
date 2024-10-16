@@ -54,7 +54,7 @@ export default function Post() {
       />
 
       {/* コンテンツエディタ */}
-      <Editor setContent={setContent} editorId="content" />
+      <Editor setContent={setContent} editorId="content" content={content} />
 
       <button
         onClick={handleSubmit}

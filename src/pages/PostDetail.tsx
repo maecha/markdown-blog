@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabaseClient";
+import Modal from "@/components/Modal";
 
 type Post = {
   id: number;
@@ -12,6 +13,7 @@ type Post = {
 export default function PostDetail() {
   const { id } = useParams();
   const [post, setPost] = useState<Post | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const navigation = useNavigate();
 
   useEffect(() => {
@@ -39,14 +41,14 @@ export default function PostDetail() {
           <p>{post.content}</p>
           <div className="mt-4">
             <Link
-              to={`/post/${post.id}`}
+              to={`/post/edit/${post.id}`}
               className="px-4 py-2 bg-yellow-500 text-white rounded"
             >
               編集
             </Link>
             <button
-              onClick={handleDelete}
-              className="px-4 py-2 bg-red-500 text-white rounded ml-4"
+              onClick={() => setIsModalOpen(true)}
+              className="px-4 py-2 bg-red-400 text-white rounded ml-4"
             >
               削除
             </button>
@@ -55,6 +57,15 @@ export default function PostDetail() {
       ) : (
         <p>読み込み中...</p>
       )}
+
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onConfirm={() => {
+          handleDelete();
+          setIsModalOpen(false);
+        }}
+      />
     </div>
   );
 }
