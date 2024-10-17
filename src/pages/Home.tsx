@@ -2,11 +2,11 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { Link } from "react-router-dom";
 import { type Post } from "@/types/postTypes";
-import { useAuth } from "@/hooks/useAuth";
+import { useUserStore } from "@/stores/userStore";
 
 export default function Home() {
   const [posts, setPosts] = useState<Post[]>([]);
-  const { user } = useAuth();
+  const { user } = useUserStore();
 
   const fetchPosts = async () => {
     const { data } = await supabase.from("posts").select("*");

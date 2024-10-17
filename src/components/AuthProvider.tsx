@@ -1,11 +1,10 @@
 import { createContext, ReactNode, useEffect } from "react";
 import { useAuthStore } from "@/stores/authStore";
+import { useUserStore } from "@/stores/userStore";
 import { supabase } from "@/lib/supabaseClient";
-import type { User } from "@supabase/supabase-js";
 
 interface AuthContextType {
-  user: User | null;
-  setUser: (user: User) => void;
+  userId: string | null;
   clearAuth: () => void;
 }
 
@@ -14,7 +13,8 @@ export const AuthContext = createContext<AuthContextType | undefined>(
 );
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const { user, setUser, clearAuth } = useAuthStore();
+  const { userId, setUserId, clearAuth } = useAuthStore();
+  const { setUser, fetchUser } = useUserStore();
 
   useEffect(() => {
     const getSession = async () => {
@@ -27,7 +27,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         if (error) throw error;
 
         if (session) {
-          setUser(session.user);
+          setUserId(session.user.id); // ローカルストレージに userId を保存
+          setUser(session.user); // ユーザー情報をキャッシュ
         }
       } catch (error) {
         console.error("セッション取得エラー:", error);
@@ -39,7 +40,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const { data: listener } = supabase.auth.onAuthStateChange(
       (_event, session) => {
         if (session) {
-          setUser(session.user);
+          setUserId(session.user.id); // ローカルストレージに userId を保存
+          setUser(session.user); // ユーザー情報をキャッシュ
         } else {
           clearAuth();
         }
@@ -49,10 +51,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return () => {
       listener.subscription.unsubscribe();
     };
-  }, [setUser, clearAuth]);
+  }, [setUserId, setUser, clearAuth]);
+
+  useEffect(() => {
+    if (userId) {
+      fetchUser(); // キャッシュされたユーザー情報をフェッチ
+    }
+  }, [userId, fetchUser]);
 
   return (
-    <AuthContext.Provider value={{ user, setUser, clearAuth }}>
+    <AuthContext.Provider value={{ userId, clearAuth }}>
       {children}
     </AuthContext.Provider>
   );

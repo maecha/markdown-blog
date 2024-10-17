@@ -1,10 +1,12 @@
-import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/lib/supabaseClient";
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
+import { useAuthStore } from "@/stores/authStore";
+import { useUserStore } from "@/stores/userStore";
 
 export default function Header() {
-  const { user, clearAuth } = useAuth();
+  const { clearAuth } = useAuthStore();
+  const { user, setUser } = useUserStore();
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
@@ -15,7 +17,10 @@ export default function Header() {
       console.error("ログアウトエラー:", error.message);
       return;
     }
+
     clearAuth();
+    setUser(null);
+
     navigate("/login");
   };
 

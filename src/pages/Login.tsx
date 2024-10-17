@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuthStore } from "@/stores/authStore";
+import { useUserStore } from "@/stores/userStore";
 
 export default function Login() {
-  const { user, setUser } = useAuth();
+  const { userId, setUserId } = useAuthStore();
+  const { fetchUser } = useUserStore();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isSignUp, setIsSignUp] = useState(false);
@@ -12,10 +14,10 @@ export default function Login() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (user) {
+    if (userId) {
       navigate("/");
     }
-  }, [user, navigate]);
+  }, [userId, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,7 +43,8 @@ export default function Login() {
       }
 
       if (data?.user) {
-        setUser(data.user);
+        setUserId(data.user.id); // userId のみをローカルストレージに保存
+        await fetchUser(); // ユーザー情報をフェッチしてキャッシュ
         navigate("/");
       }
     } catch (error: unknown) {
