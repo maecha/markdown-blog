@@ -9,18 +9,29 @@ interface AuthContextType {
   clearAuth: () => void;
 }
 
-export const AuthContext = createContext<AuthContextType | undefined>(undefined);
+export const AuthContext = createContext<AuthContextType | undefined>(
+  undefined
+);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const { user, setUser, clearAuth } = useAuthStore();
 
   useEffect(() => {
     const getSession = async () => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      if (session) {
-        setUser(session.user);
+      try {
+        const {
+          data: { session },
+          error,
+        } = await supabase.auth.getSession();
+
+        if (error) throw error;
+
+        if (session) {
+          setUser(session.user);
+        }
+      } catch (error) {
+        console.error("セッション取得エラー:", error);
+        clearAuth();
       }
     };
     getSession();
