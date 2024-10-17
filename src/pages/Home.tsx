@@ -19,9 +19,6 @@ export default function Home() {
     }
   }, [user]);
 
-  console.log(import.meta.env.VITE_SUPABASE_URL);
-  console.log(import.meta.env.VITE_SUPABASE_ANON_KEY);
-
   return (
     <div className="container mx-auto max-w-[620px] py-10">
       {user ? (
