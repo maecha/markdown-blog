@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "@/lib/supabaseClient";
 import { Editor } from "@/components/Editor";
-import { PostFormSchema, type Post } from "@/schemas/postSchema";
+import { PostFormSchema } from "@/schemas/postSchema";
+import { type Post } from "@/types/postTypes";
 
 export default function Post() {
   const [title, setTitle] = useState<string>("");

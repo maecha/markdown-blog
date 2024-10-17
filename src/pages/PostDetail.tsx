@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabaseClient";
 import Modal from "@/components/Modal";
-import { type Post } from "@/schemas/postSchema";
+import { type Post } from "@/types/postTypes";
 
 export default function PostDetail() {
   const { id } = useParams();
@@ -38,7 +38,7 @@ export default function PostDetail() {
       const { data } = await supabase
         .from("posts")
         .select("*")
-        .eq("id", id)
+        .eq("id", Number(id))
         .single();
       setPost(data as Post);
     };
@@ -46,7 +46,7 @@ export default function PostDetail() {
   }, [id]);
 
   const handleDelete = async () => {
-    await supabase.from("posts").delete().eq("id", id);
+    await supabase.from("posts").delete().eq("id", Number(id));
     navigate("/");
   };
 
