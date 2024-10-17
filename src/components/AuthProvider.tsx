@@ -27,8 +27,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         if (error) throw error;
 
         if (session) {
-          setUserId(session.user.id); // ローカルストレージに userId を保存
-          setUser(session.user); // ユーザー情報をキャッシュ
+          setUserId(session.user.id);
+          setUser(session.user);
         }
       } catch (error) {
         console.error("セッション取得エラー:", error);
@@ -40,8 +40,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const { data: listener } = supabase.auth.onAuthStateChange(
       (_event, session) => {
         if (session) {
-          setUserId(session.user.id); // ローカルストレージに userId を保存
-          setUser(session.user); // ユーザー情報をキャッシュ
+          setUserId(session.user.id);
+          setUser(session.user);
         } else {
           clearAuth();
         }
@@ -55,7 +55,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     if (userId) {
-      fetchUser(); // キャッシュされたユーザー情報をフェッチ
+      fetchUser();
     }
   }, [userId, fetchUser]);
 
