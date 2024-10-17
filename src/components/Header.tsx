@@ -39,9 +39,10 @@ export default function Header() {
 
   return (
     <header className="bg-white w-full">
-      <div className="container mx-auto max-w-[620px] flex justify-between items-center py-5 px-1">
+      <div className="container mx-auto max-w-full sm:max-w-[620px] flex justify-between items-center py-5 px-5">
         <Link to="/" className="text-xl font-bold flex items-center">
-          MARKDOWN BLOG
+          <span className="block sm:hidden">MB</span>
+          <span className="hidden sm:block">MARKDOWN BLOG</span>
           <span className="ml-2 px-2 py-1 bg-yellow-400 text-xs text-gray-900 rounded-full font-semibold leading-none">
             beta
           </span>
