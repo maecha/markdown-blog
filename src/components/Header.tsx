@@ -19,7 +19,6 @@ export default function Header() {
     navigate("/login");
   };
 
-  // 外部クリックでメニューを閉じる処理
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
@@ -55,7 +54,6 @@ export default function Header() {
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
                 className="focus:outline-none"
               >
-                {/* ここにユーザーアイコンを表示しても良い */}
                 <span className="text-gray-700">{user.email}</span>
               </button>
 
