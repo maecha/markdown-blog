@@ -1,50 +1,65 @@
-# React + TypeScript + Vite
+# Markdown Blog (beta)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+これは **Supabase** と **Vercel** を活用して構築した、認証付き Markdown ブログです。ユーザーはログインしてブログを作成、編集、削除することができます。
 
-Currently, two official plugins are available:
+このプロジェクトは Vercel でデプロイされています。デプロイされたサイトは [こちら](https://markdown-blog-roan.vercel.app) です。
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 主な機能
 
-## Expanding the ESLint configuration
+- 認証（サインアップ、ログイン、ログアウト）
+- Markdown をサポートした記事の作成・編集
+- 投稿の一覧表示・詳細表示・削除
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+## 技術スタック
 
-- Configure the top-level `parserOptions` property like this:
+- **React**: UI を構築
+- **Tailwind CSS**: UI スタイリング
+- **Zod**: スキーマバリデーション
+- **Vite**: 開発・ビルドツール
+- **Zustand**: 状態管理
+- **TanStack Query**: データフェッチとキャッシング
+- **tiptap**: リッチテキストエディタ
+- **Supabase**: 認証、データベース管理
+- **Vercel**: デプロイプラットフォーム
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ["./tsconfig.node.json", "./tsconfig.app.json"],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-});
+## 環境構築手順
+
+### 必要な環境
+
+- Node.js: 20.18.0
+- npm: 10.8.2
+
+### クローンとセットアップ
+
+```bash
+git clone https://github.com/your-username/markdown-blog.git
+cd markdown-blog
+npm install
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+### 環境変数
 
-```js
-// eslint.config.js
-import react from "eslint-plugin-react";
+Supabase の認証やデータベース接続に必要な環境変数を .env ファイルに設定してください。
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: "18.3" } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs["jsx-runtime"].rules,
-  },
-});
+```.env
+VITE_SUPABASE_URL=your-supabase-url
+VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
 ```
+
+### 開発サーバーの起動
+
+```bash
+npm run dev
+```
+
+## 今後やるとさらに良くなりそうなもの（リファクタリングや機能追加 etc）
+
+- アーキテクチャ・ディレクトリ構成を検討する
+- API 通信が冗長なのでよくしたい
+- エラーハンドリングをちゃんとする
+  - 今は型推論に頼っていて、catch したエラー内容をそのまま表示している
+- 言語ファイルを作って固定文字列を管理したい
+- プロフィールページを作ってユーザー情報を更新できるようにする
+  - メールアドレスやパスワードの変更、アイコンを設定できたりなど
+- 投稿検索機能
+- 投稿一覧のページング機能
