@@ -25,3 +25,6 @@ dist-ssr
 
 # env
 .env
+
+# TypeScript incremental build file
+tsconfig.tsbuildinfo
