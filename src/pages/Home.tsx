@@ -20,7 +20,7 @@ export default function Home() {
   }, [user]);
 
   return (
-    <div className="container mx-auto max-w-full sm:max-w-[620px] px-5 py-10">
+    <div className="container mx-auto max-w-full sm:max-w-[620px] sm:py-2 md:px-5">
       {user ? (
         <div>
           {posts.length > 0 ? (
