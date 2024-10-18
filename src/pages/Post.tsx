@@ -1,93 +1,112 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabaseClient";
 import { Editor } from "@/components/Editor";
 import { PostFormSchema } from "@/schemas/postSchema";
 import { type Post } from "@/types/postTypes";
+import LoadingErrorHandler from "@/components/LoadingErrorHandler";
 
-export default function Post() {
+export default function PostPage() {
   const [title, setTitle] = useState<string>("");
   const [content, setContent] = useState<string>("");
-  const navigation = useNavigate();
+  const navigate = useNavigate();
   const { id } = useParams();
+  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    const fetchPost = async () => {
-      if (id) {
-        const { data } = await supabase
-          .from("posts")
-          .select("*")
-          .eq("id", id)
-          .single();
-        if (data) {
-          setTitle(data.title);
-          setContent(data.content);
-        }
-      }
-    };
+  const fetchPost = async (): Promise<Post | null> => {
+    if (!id) return null;
 
-    fetchPost();
-  }, [id]);
+    const { data, error } = await supabase
+      .from("posts")
+      .select("*")
+      .eq("id", id)
+      .single();
 
-  const handleSubmit = async () => {
-    const validationResult = PostFormSchema.safeParse({ title, content });
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    setTitle(data.title);
+    setContent(data.content);
+
+    return data as Post;
+  };
+
+  const savePost = async (
+    newPost: { title: string; content: string },
+    id?: string
+  ) => {
+    const validationResult = PostFormSchema.safeParse(newPost);
     if (!validationResult.success) {
       console.error("バリデーションエラー:", validationResult.error.errors);
-      return;
+      throw new Error("バリデーションエラー");
     }
 
     if (id) {
       const { error } = await supabase
         .from("posts")
-        .update({ title, content })
+        .update({ title: newPost.title, content: newPost.content })
         .eq("id", id);
-
-      if (error) {
-        throw error;
-      }
-
-      navigation(`/post/${id}`);
+      if (error) throw new Error(error.message);
+      return { id };
     } else {
       const { data, error } = await supabase
         .from("posts")
-        .insert([{ title, content }])
+        .insert([{ title: newPost.title, content: newPost.content }])
         .select();
-
-      if (error) {
-        throw error;
-      }
-
-      if (data && (data as Post[]).length > 0) {
-        const createdPost = (data as Post[])[0];
-        navigation(`/post/${createdPost.id}`);
-      }
+      if (error) throw new Error(error.message);
+      return { id: data?.[0].id };
     }
   };
 
+  const { error, isLoading } = useQuery({
+    queryKey: ["post", id],
+    queryFn: fetchPost,
+    enabled: Boolean(id),
+  });
+
+  const savePostMutation = useMutation({
+    mutationFn: async (newPost: { title: string; content: string }) => {
+      return await savePost(newPost, id);
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+      navigate(`/post/${data.id}`);
+    },
+  });
+
+  const handleSubmit = async () => {
+    savePostMutation.mutate({ title, content });
+  };
+
   return (
-    <div className="container mx-auto">
-      <h1 className="text-2xl font-bold mb-4">{id ? "編集" : "新規作成"}</h1>
+    <LoadingErrorHandler isLoading={isLoading} error={error}>
+      <div className="container mx-auto">
+        <h1 className="text-2xl font-bold mb-4">{id ? "編集" : "新規作成"}</h1>
 
-      <label className="block text-lg font-medium mb-2" htmlFor="title">
-        タイトル
-      </label>
-      <input
-        id="title"
-        type="text"
-        placeholder="タイトルを入力してください"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        className="block w-full p-2 mb-4 border focus:border-sky-500 focus:outline-none rounded"
-      />
+        <label className="block text-lg font-medium mb-2" htmlFor="title">
+          タイトル
+        </label>
+        <input
+          id="title"
+          type="text"
+          placeholder="タイトルを入力してください"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          className="block w-full p-2 mb-4 border focus:border-sky-500 focus:outline-none rounded"
+        />
 
-      <Editor setContent={setContent} editorId="content" content={content} />
+        <Editor setContent={setContent} editorId="content" content={content} />
 
-      <button
-        onClick={handleSubmit}
-        className="px-4 py-2 bg-sky-500 text-white rounded mt-4"
-      >
-        {id ? "更新" : "作成"}
-      </button>
-    </div>
+        <button
+          onClick={handleSubmit}
+          className="px-4 py-2 bg-sky-500 text-white rounded mt-4"
+          disabled={isLoading}
+        >
+          {id ? "更新" : "作成"}
+        </button>
+      </div>
+    </LoadingErrorHandler>
   );
 }
