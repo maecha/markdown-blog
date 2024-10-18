@@ -37,12 +37,6 @@ export default function PostPage() {
     newPost: { title: string; content: string },
     id?: string
   ) => {
-    const validationResult = PostFormSchema.safeParse(newPost);
-    if (!validationResult.success) {
-      console.error("バリデーションエラー:", validationResult.error.errors);
-      throw new Error("バリデーションエラー");
-    }
-
     if (id) {
       const { error } = await supabase
         .from("posts")
@@ -77,6 +71,12 @@ export default function PostPage() {
   });
 
   const handleSubmit = async () => {
+    const validationResult = PostFormSchema.safeParse({ title, content });
+    if (!validationResult.success) {
+      console.error("バリデーションエラー:", validationResult.error.errors);
+      return;
+    }
+
     savePostMutation.mutate({ title, content });
   };
 
