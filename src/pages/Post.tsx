@@ -8,10 +8,10 @@ import { type Post } from "@/types/postTypes";
 import LoadingErrorHandler from "@/components/LoadingErrorHandler";
 
 export default function PostPage() {
+  const { id } = useParams();
   const [title, setTitle] = useState<string>("");
   const [content, setContent] = useState<string>("");
   const navigate = useNavigate();
-  const { id } = useParams();
   const queryClient = useQueryClient();
 
   const fetchPost = async (): Promise<Post | null> => {
@@ -32,6 +32,12 @@ export default function PostPage() {
 
     return data as Post;
   };
+
+  const { error, isLoading } = useQuery({
+    queryKey: ["post", id],
+    queryFn: fetchPost,
+    enabled: Boolean(id),
+  });
 
   const savePost = async (
     newPost: { title: string; content: string },
@@ -54,17 +60,12 @@ export default function PostPage() {
     }
   };
 
-  const { error, isLoading } = useQuery({
-    queryKey: ["post", id],
-    queryFn: fetchPost,
-    enabled: Boolean(id),
-  });
-
   const savePostMutation = useMutation({
     mutationFn: async (newPost: { title: string; content: string }) => {
       return await savePost(newPost, id);
     },
     onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["post", id] });
       queryClient.invalidateQueries({ queryKey: ["posts"] });
       navigate(`/post/${data.id}`);
     },
