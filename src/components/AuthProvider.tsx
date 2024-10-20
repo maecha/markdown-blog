@@ -1,18 +1,9 @@
-import { createContext, ReactNode, useEffect } from "react";
+import { useEffect } from "react";
 import { useAuthStore } from "@/stores/authStore";
 import { useUserStore } from "@/stores/userStore";
 import { supabase } from "@/lib/supabaseClient";
 
-interface AuthContextType {
-  userId: string | null;
-  clearAuth: () => void;
-}
-
-export const AuthContext = createContext<AuthContextType | undefined>(
-  undefined
-);
-
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
+export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const { userId, setUserId, clearAuth } = useAuthStore();
   const { setUser, fetchUser } = useUserStore();
 
@@ -23,7 +14,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           data: { session },
           error,
         } = await supabase.auth.getSession();
-
         if (error) throw error;
 
         if (session) {
@@ -35,6 +25,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         clearAuth();
       }
     };
+
     getSession();
 
     const { data: listener } = supabase.auth.onAuthStateChange(
@@ -59,9 +50,5 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [userId, fetchUser]);
 
-  return (
-    <AuthContext.Provider value={{ userId, clearAuth }}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <>{children}</>;
 };
