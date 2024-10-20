@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
+import EditorMenu from "@/components/EditorMenu";
 
 interface EditorProps {
   setContent: (content: string) => void;
@@ -55,6 +56,7 @@ export function Editor({ setContent, editorId, content = "" }: EditorProps) {
         コンテンツ
       </label>
       <EditorContent editor={editor} id={editorId} />
+      <EditorMenu editor={editor} />
     </>
   );
 }
