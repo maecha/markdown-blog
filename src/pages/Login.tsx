@@ -3,6 +3,7 @@ import { supabase } from "@/lib/supabaseClient";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/stores/authStore";
 import { useUserStore } from "@/stores/userStore";
+import { LoginFormSchema } from "@/schemas/userSchema";
 
 export default function Login() {
   const { userId, setUserId } = useAuthStore();
@@ -22,6 +23,12 @@ export default function Login() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage(null);
+
+    const validationResult = LoginFormSchema.safeParse({ email, password });
+    if (!validationResult.success) {
+      console.error("バリデーションエラー:", validationResult.error.errors);
+      return;
+    }
 
     try {
       let data;
