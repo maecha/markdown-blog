@@ -146,12 +146,16 @@ export default function PostDetail() {
             />
 
             <Modal
+              title="削除してもよろしいですか？"
+              body="本当に、本当に、本当にいいんですか！？"
               isOpen={isModalOpen}
               onClose={() => setIsModalOpen(false)}
               onConfirm={() => {
                 deletePostMutation.mutate();
                 setIsModalOpen(false);
               }}
+              closeLabel="キャンセル"
+              confirmLabel="削除"
             />
           </div>
         ) : (

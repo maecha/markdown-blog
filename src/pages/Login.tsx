@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/stores/authStore";
 import { useUserStore } from "@/stores/userStore";
 import { LoginFormSchema } from "@/schemas/userSchema";
+import Modal from "@/components/Modal";
 
 export default function Login() {
   const { userId, setUserId } = useAuthStore();
@@ -12,6 +13,7 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [isSignUp, setIsSignUp] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -31,26 +33,26 @@ export default function Login() {
     }
 
     try {
-      let data;
       if (isSignUp) {
-        const { data: signUpData, error } = await supabase.auth.signUp({
+        const { error } = await supabase.auth.signUp({
           email,
           password,
         });
         if (error) throw new Error(error.message);
-        data = signUpData;
-      } else {
-        const { data: signInData, error } =
-          await supabase.auth.signInWithPassword({
-            email,
-            password,
-          });
-        if (error) throw new Error(error.message);
-        data = signInData;
+
+        setIsModalOpen(true);
+        return;
       }
 
-      if (data?.user) {
-        setUserId(data.user.id); // userId のみをローカルストレージに保存
+      const { data: signInData, error } =
+        await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+      if (error) throw new Error(error.message);
+
+      if (signInData?.user) {
+        setUserId(signInData.user.id); // userId のみをローカルストレージに保存
         await fetchUser(); // ユーザー情報をフェッチしてキャッシュ
         navigate("/");
       }
@@ -107,6 +109,16 @@ export default function Login() {
           {isSignUp ? "ログイン" : "サインアップ"}
         </button>
       </p>
+
+      <Modal
+        title="アカウントを作成しました"
+        body="認証メールを送信しました。メールを確認してください。"
+        isOpen={isModalOpen}
+        onConfirm={() => {
+          setIsModalOpen(false);
+        }}
+        confirmLabel="OK"
+      />
     </div>
   );
 }
